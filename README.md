@@ -16,6 +16,7 @@ Error handling for invalid credentials or recipient addresses.
 Easy configuration with environment variables.
 
 🧰 Tech Stack
+<img width="1319" height="856" alt="Screenshot 2025-11-10 231518" src="https://github.com/user-attachments/assets/95d6e01b-f9f2-4c9f-bfa3-32926f52c827" />
 
 Language: Python 3
 
@@ -26,3 +27,4 @@ smtplib (for sending mails)
 ssl (for secure connection)
 
 email.mime (for formatting email content)
+
