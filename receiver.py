@@ -1,33 +1,29 @@
-# receiver.py
 import poplib, time
 from email.parser import BytesParser
 from datetime import datetime
 
 USERNAME = "amitoujacodes@gmail.com"
-APP_PASS = "zlyctvtehuodtias"  # same app password
+APP_PASS = "zlyctvtehuodtias"
 
-def fetch_latest():
+last_count = 0
+print("📩 Starting receiver (poll every 5s). Ctrl+C to stop.\n")
+
+while True:
     try:
-        mail = poplib.POP3_SSL("pop.gmail.com", 995, timeout=10)
-        mail.user(USERNAME)
-        mail.pass_(APP_PASS)
-        resp, items, octets = mail.list()
-        count = len(items)
-        if count == 0:
-            print(f"[{datetime.now()}] Inbox empty")
-        else:
-            resp, lines, octets = mail.retr(count)  # fetch latest message
-            raw = b"\n".join(lines)
-            msg = BytesParser().parsebytes(raw)
-            print(f"\n[{datetime.now()}] New mail:")
-            print("From:", msg.get("From"))
-            print("Subject:", msg.get("Subject"))
-            print("Body:", msg.get_payload())
-        mail.quit()
+        with poplib.POP3_SSL("pop.gmail.com", 995, timeout=10) as mail:
+            mail.user(USERNAME)
+            mail.pass_(APP_PASS)
+            resp, items, _ = mail.list()
+            count = len(items)
+            if count > last_count:
+                print(f"\n[{datetime.now()}] ✉️ New email received ({count - last_count} new)")
+                resp, lines, _ = mail.retr(count)
+                raw = b"\n".join(lines)
+                msg = BytesParser().parsebytes(raw)
+                print("From:", msg.get("From"))
+                print("Subject:", msg.get("Subject"))
+                print("Body:", msg.get_payload(decode=True).decode(errors="ignore"))
+            last_count = count
     except Exception as e:
         print("POP3 error:", e)
-
-print("Starting receiver (poll every 5s). Ctrl+C to stop.")
-while True:
-    fetch_latest()
     time.sleep(5)
